@@ -2,14 +2,14 @@
 const SUPABASE_URL = 'https://glijwblkhiahhgiwkpin.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsaWp3YmxraGlhaGhnaXdrcGluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NDM5NTMsImV4cCI6MjA5NjUxOTk1M30.b9Lsp3Nw09puy2Ni5ekdTwJFi-GI7AgdIgbbOkUt8PQ';
 
-let supabase = null;
+let sb = null;
 
 function initSupabase() {
   if (typeof window.supabase === 'undefined') {
     console.error('Supabase client not loaded');
     return false;
   }
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   return true;
 }
 
@@ -70,7 +70,7 @@ async function initForm() {
     const uploads = files.map((file, i) => {
       const ext = file.name.split('.').pop().toLowerCase();
       const filename = `${messageId}/${i}.${ext}`;
-      return supabase.storage.from('images').upload(filename, file, {
+      return sb.storage.from('images').upload(filename, file, {
         contentType: file.type,
         upsert: false
       });
@@ -94,7 +94,7 @@ async function initForm() {
 
     try {
       // 1. Insert message record
-      const { data: msgData, error: msgError } = await supabase
+      const { data: msgData, error: msgError } = await sb
         .from('messages')
         .insert({ username, content: message })
         .select('id')
@@ -144,13 +144,13 @@ async function initAdmin() {
     errorBanner.classList.remove('show');
 
     try {
-      const { data: messages, error } = await supabase
+      const { data: messages, error } = await sb
         .from('messages')
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;
 
-      const { count: imgCount } = await supabase
+      const { count: imgCount } = await sb
         .from('messages')
         .select('id', { count: 'exact', head: true })
         .not('image_paths', 'is', null);
@@ -206,7 +206,7 @@ async function initAdmin() {
 
   refreshBtn.addEventListener('click', loadMessages);
   exportBtn.addEventListener('click', async () => {
-    const { data, error } = await supabase.from('messages').select('*').order('created_at', { ascending: false });
+    const { data, error } = await sb.from('messages').select('*').order('created_at', { ascending: false });
     if (error) return alert('Export failed: ' + error.message);
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -218,11 +218,11 @@ async function initAdmin() {
     if (!confirm('Delete ALL messages and images? This cannot be undone.')) return;
     try {
       // Delete all images from storage
-      const { data: allMessages } = await supabase.from('messages').select('image_paths');
+      const { data: allMessages } = await sb.from('messages').select('image_paths');
       const allPaths = allMessages?.flatMap(m => m.image_paths || []) || [];
-      if (allPaths.length) await supabase.storage.from('images').remove(allPaths);
+      if (allPaths.length) await sb.storage.from('images').remove(allPaths);
       // Delete all messages
-      await supabase.from('messages').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      await sb.from('messages').delete().neq('id', '00000000-0000-0000-0000-000000000000');
       loadMessages();
     } catch (err) {
       alert('Clear failed: ' + err.message);
