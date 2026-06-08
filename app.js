@@ -1,6 +1,8 @@
-// Supabase config — replace with your values or set via environment variables
-const SUPABASE_URL = 'https://glijwblkhiahhgiwkpin.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsaWp3YmxraGlhaGhnaXdrcGluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NDM5NTMsImV4cCI6MjA5NjUxOTk1M30.b9Lsp3Nw09puy2Ni5ekdTwJFi-GI7AgdIgbbOkUt8PQ';
+// --- Build-time env substitution ---
+// During `vercel build`, a prebuild script replaces __SUPABASE_URL__ and __SUPABASE_ANON_KEY__
+// with the values from Vercel Environment Variables, so nothing is hardcoded.
+const SUPABASE_URL = '__SUPABASE_URL__';
+const SUPABASE_ANON_KEY = '__SUPABASE_ANON_KEY__';
 
 let sb = null;
 

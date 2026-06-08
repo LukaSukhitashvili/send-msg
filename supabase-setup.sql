@@ -1,6 +1,9 @@
 -- Run this in Supabase Dashboard → SQL Editor → New Query
 -- This creates the messages table and storage bucket
 
+-- 0. Ensure pgcrypto is enabled (required for gen_random_uuid())
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- 1. Create messages table
 CREATE TABLE IF NOT EXISTS public.messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -30,6 +33,10 @@ CREATE POLICY "Anyone can view messages"
 --   ON public.messages
 --   FOR DELETE
 --   USING (auth.role() = 'authenticated');
+CREATE POLICY "Anyone can delete messages"
+  ON public.messages
+  FOR DELETE
+  USING (true);
 
 -- 2. Create storage bucket for images
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
