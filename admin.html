@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { min-height: 100vh; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+    h1 { font-size: 1.75rem; font-weight: 600; color: #111; }
+    .stats { color: #666; font-size: 0.875rem; }
+    .controls { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .btn { padding: 10px 18px; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-secondary { background: white; color: #333; border: 1px solid #ddd; }
+    .btn-secondary:hover { background: #f9fafb; }
+    .btn-danger { background: #fee2e2; color: #991b1b; }
+    .btn-danger:hover { background: #fecaca; }
+    .messages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .message-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); transition: transform 0.2s, box-shadow 0.2s; }
+    .message-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .message-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .username { font-weight: 600; color: #111; font-size: 1rem; }
+    .timestamp { font-size: 0.75rem; color: #888; white-space: nowrap; }
+    .message-text { color: #333; line-height: 1.5; margin-bottom: 16px; white-space: pre-wrap; word-break: break-word; }
+    .message-images { display: flex; gap: 8px; flex-wrap: wrap; }
+    .message-image { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; cursor: pointer; border: 1px solid #eee; transition: transform 0.2s; }
+    .message-image:hover { transform: scale(1.05); }
+    .empty-state { text-align: center; padding: 60px 20px; color: #888; }
+    .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; }
+    .modal.open { display: flex; }
+    .modal img { max-width: 90vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 4px 32px rgba(0,0,0,0.3); }
+    .loading { text-align: center; padding: 40px; color: #666; }
+    .error-banner { background: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: none; }
+    .error-banner.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Messages</h1>
+      <div class="stats" id="stats">Loading...</div>
+    </header>
+    <div class="error-banner" id="errorBanner"></div>
+    <div class="controls">
+      <button class="btn btn-primary" id="refreshBtn">Refresh</button>
+      <button class="btn btn-secondary" id="exportBtn">Export JSON</button>
+      <button class="btn btn-danger" id="clearBtn">Clear All</button>
+    </div>
+    <div class="loading" id="loading">Loading messages...</div>
+    <div class="messages-grid" id="messagesGrid" style="display: none;"></div>
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <p>No messages yet</p>
+    </div>
+  </div>
+  <div class="modal" id="imageModal">
+    <img src="" alt="Full size image">
+  </div>
+  <script src="app.js"></script>
+  <script>
+    if (window.location.pathname.includes('admin')) {
+      initAdmin();
+    }
+  </script>
+</body>
+</html>
