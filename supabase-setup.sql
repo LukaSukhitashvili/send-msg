@@ -38,16 +38,20 @@ CREATE POLICY "Anyone can delete messages"
   FOR DELETE
   USING (true);
 
--- 2. Create storage bucket for images
+-- 2. Create storage bucket for images (or update if already exists)
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
   'images',
   'images',
   true,
-  5242880,  -- 5MB
+  5242880,
   ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  public = EXCLUDED.public,
+  file_size_limit = EXCLUDED.file_size_limit,
+  allowed_mime_types = EXCLUDED.allowed_mime_types;
 
 -- 3. Storage policies
 -- Public read access

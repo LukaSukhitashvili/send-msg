@@ -4,8 +4,8 @@ const path = require('path');
 
 const APP_JS = path.join(__dirname, '..', 'app.js');
 
-const url = process.env.SUPABASE_URL || '';
-const key = process.env.SUPABASE_ANON_KEY || '';
+const url = (process.env.SUPABASE_URL || '').trim();
+const key = (process.env.SUPABASE_ANON_KEY || '').trim();
 
 if (!url || !key) {
   console.log('SKIP inject-env: SUPABASE_URL or SUPABASE_ANON_KEY missing — keeping placeholders.');
